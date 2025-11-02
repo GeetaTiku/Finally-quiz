@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cisco Networking Interactive Exercises</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #EBF4FF 0%, #E0E7FF 50%, #EDE9FE 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-top: 4px solid #2563EB;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #1F2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #6B7280;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2563EB;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6B7280;
+        }
+        
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .exercise-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .exercise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #3B82F6;
+        }
+        
+        .exercise-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .exercise-card h3 {
+            font-size: 1.25rem;
+            color: #1F2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .exercise-card p {
+            color: #6B7280;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .start-btn {
+            color: #2563EB;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .exercise-view {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .back-btn {
+            color: #2563EB;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        
+        .back-btn:hover {
+            color: #1D4ED8;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .question-box {
+            background: linear-gradient(135deg, #EBF4FF 0%, #E0E7FF 100%);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 2px solid #BFDBFE;
+            margin-bottom: 1.5rem;
+        }
+        
+        .question-text {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1F2937;
+        }
+        
+        .options-grid {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .option-btn {
+            padding: 1rem;
+            border: 2px solid #D1D5DB;
+            border-radius: 0.75rem;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        
+        .option-btn:hover:not(:disabled) {
+            border-color: #3B82F6;
+            background: #EBF4FF;
+        }
+        
+        .option-btn.correct {
+            background: #D1FAE5;
+            border-color: #10B981;
+            color: #065F46;
+        }
+        
+        .option-btn.incorrect {
+            background: #FEE2E2;
+            border-color: #EF4444;
+            color: #991B1B;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 0.875rem;
+            background: #2563EB;
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #1D4ED8;
+        }
+        
+        .btn-primary:disabled {
+            background: #9CA3AF;
+            cursor: not-allowed;
+        }
+        
+        .explanation-box {
+            background: #EBF4FF;
+            border: 2px solid #BFDBFE;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .explanation-title {
+            font-weight: 600;
+            color: #1E40AF;
+            margin-bottom: 0.5rem;
+        }
+        
+        .explanation-text {
+            color: #374151;
+        }
+        
+        .match-container {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .match-item {
+            background: white;
+            padding: 1rem;
+            border: 2px solid #BFDBFE;
+            border-radius: 0.75rem;
+        }
+        
+        .match-label {
+            font-weight: 600;
+            color: #1E40AF;
+            margin-bottom: 0.5rem;
+        }
+        
+        .match-select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #D1D5DB;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .match-select:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+        
+        .result-indicator {
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .result-indicator.correct {
+            color: #10B981;
+        }
+        
+        .result-indicator.incorrect {
+            color: #EF4444;
+        }
+        
+        .console-box {
+            background: #1F2937;
+            color: #10B981;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .stats {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h1>🌐 Cisco Networking Lab</h1>
+                    <p>Master the fundamentals with interactive exercises</p>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="score">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="attempts">0</div>
+                        <div class="stat-label">Attempted</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="exerciseMenu" class="exercise-grid">
+            <!-- Exercise cards will be populated by JavaScript -->
+        </div>
+
+        <div id="exerciseView" class="exercise-view hidden">
+            <!-- Exercise content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let state = {
+            score: 0,
+            attempts: 0,
+            currentExercise: null,
+            currentQuestion: 0,
+            userAnswers: {},
+            showResults: false
+        };
+
+        // Exercise data
+        const exercises = [
+            {
+                id: 'osi-model',
+                title: 'OSI Model Layers',
+                description: 'Match each layer with its correct function',
+                type: 'matching',
+                icon: '🔗',
+                items: [
+                    { id: 1, layer: 'Physical', function: 'Transmission of raw bits over physical medium' },
+                    { id: 2, layer: 'Data Link', function: 'Node-to-node data transfer and error detection' },
+                    { id: 3, layer: 'Network', function: 'Logical addressing and routing (IP)' },
+                    { id: 4, layer: 'Transport', function: 'End-to-end connections (TCP/UDP)' },
+                    { id: 5, layer: 'Session', function: 'Manages sessions between applications' },
+                    { id: 6, layer: 'Presentation', function: 'Data formatting, encryption, compression' },
+                    { id: 7, layer: 'Application', function: 'Network services to applications (HTTP, FTP)' }
+                ]
+            },
+            {
+                id: 'ip-subnetting',
+                title: 'IP Subnetting Quiz',
+                description: 'Test your subnetting knowledge',
+                type: 'quiz',
+                icon: '🖥️',
+                questions: [
+                    {
+                        q: 'What is the default subnet mask for a Class C network?',
+                        options: ['255.0.0.0', '255.255.0.0', '255.255.255.0', '255.255.255.255'],
+                        correct: 2
+                    },
+                    {
+                        q: 'How many usable host addresses are in a /26 network?',
+                        options: ['32', '62', '64', '126'],
+                        correct: 1
+                    },
+                    {
+                        q: 'What does CIDR stand for?',
+                        options: ['Computer Internet Data Routing', 'Classless Inter-Domain Routing', 'Central Internet Domain Registry', 'Class Internet Data Resource'],
+                        correct: 1
+                    },
+                    {
+                        q: 'Which IP address is a private address?',
+                        options: ['8.8.8.8', '192.168.1.1', '1.1.1.1', '223.255.255.0'],
+                        correct: 1
+                    }
+                ]
+            },
+            {
+                id: 'cable-types',
+                title: 'Cable Type Identifier',
+                description: 'Identify the correct cable for each scenario',
+                type: 'scenario',
+                icon: '🔌',
+                scenarios: [
+                    {
+                        scenario: 'Connect a router to a switch',
+                        options: ['Straight-through cable', 'Crossover cable', 'Rollover cable', 'Fiber optic cable'],
+                        correct: 0,
+                        explanation: 'Straight-through cables connect devices of different types (router to switch, PC to switch).'
+                    },
+                    {
+                        scenario: 'Connect two switches directly without uplink ports',
+                        options: ['Straight-through cable', 'Crossover cable', 'Rollover cable', 'Coaxial cable'],
+                        correct: 1,
+                        explanation: 'Crossover cables connect similar devices (switch to switch, PC to PC) when auto-MDI/MDIX is not available.'
+                    },
+                    {
+                        scenario: 'Connect a laptop to a router console port',
+                        options: ['Straight-through cable', 'Crossover cable', 'Rollover cable', 'Serial cable'],
+                        correct: 2,
+                        explanation: 'Rollover (console) cables are used for device configuration via the console port.'
+                    },
+                    {
+                        scenario: 'Connect buildings 500 meters apart',
+                        options: ['Cat5e cable', 'Cat6 cable', 'Fiber optic cable', 'Crossover cable'],
+                        correct: 2,
+                        explanation: 'Fiber optic cables support long distances (up to 40km+) beyond copper\'s 100m limit.'
+                    }
+                ]
+            },
+            {
+                id: 'cisco-commands',
+                title: 'Cisco IOS Commands',
+                description: 'Match commands to their functions',
+                type: 'command-match',
+                icon: '⚡',
+                commands: [
+                    { cmd: 'enable', purpose: 'Enter privileged EXEC mode' },
+                    { cmd: 'configure terminal', purpose: 'Enter global configuration mode' },
+                    { cmd: 'show running-config', purpose: 'Display current active configuration' },
+                    { cmd: 'show ip interface brief', purpose: 'Display summary of interface IP status' },
+                    { cmd: 'copy running-config startup-config', purpose: 'Save configuration to NVRAM' },
+                    { cmd: 'no shutdown', purpose: 'Enable an interface' },
+                    { cmd: 'show version', purpose: 'Display IOS version and hardware info' }
+                ]
+            },
+            {
+                id: 'network-devices',
+                title: 'Network Device Functions',
+                description: 'Identify the purpose of each device',
+                type: 'device-quiz',
+                icon: '📡',
+                questions: [
+                    {
+                        q: 'Which device operates at Layer 2 and uses MAC addresses?',
+                        options: ['Router', 'Switch', 'Hub', 'Repeater'],
+                        correct: 1,
+                        explanation: 'Switches operate at the Data Link layer (Layer 2) and make forwarding decisions based on MAC addresses.'
+                    },
+                    {
+                        q: 'Which device connects different networks and routes packets?',
+                        options: ['Switch', 'Bridge', 'Router', 'Hub'],
+                        correct: 2,
+                        explanation: 'Routers operate at Layer 3 and route packets between different networks using IP addresses.'
+                    },
+                    {
+                        q: 'What is the primary difference between a hub and a switch?',
+                        options: ['Speed', 'Collision domain separation', 'Cable type', 'Power consumption'],
+                        correct: 1,
+                        explanation: 'Switches create separate collision domains for each port, while hubs share one collision domain.'
+                    },
+                    {
+                        q: 'Which device provides wireless connectivity to end devices?',
+                        options: ['Router', 'Wireless Access Point', 'Modem', 'Switch'],
+                        correct: 1,
+                        explanation: 'Wireless Access Points (WAPs) provide wireless connectivity and bridge wireless clients to the wired network.'
+                    }
+                ]
+            }
+        ];
+
+        // Initialize
+        function init() {
+            renderExerciseMenu();
+            updateStats();
+        }
+
+        // Render exercise menu
+        function renderExerciseMenu() {
+            const menu = document.getElementById('exerciseMenu');
+            menu.innerHTML = exercises.map(ex => `
+                <div class="exercise-card" onclick="startExercise('${ex.id}')">
+                    <div class="exercise-icon">${ex.icon}</div>
+                    <h3>${ex.title}</h3>
+                    <p>${ex.description}</p>
+                    <div class="start-btn">Start Exercise →</div>
+                </div>
+            `).join('');
+        }
+
+        // Start exercise
+        function startExercise(id) {
+            state.currentExercise = exercises.find(ex => ex.id === id);
+            state.currentQuestion = 0;
+            state.userAnswers = {};
+            state.showResults = false;
+            
+            document.getElementById('exerciseMenu').classList.add('hidden');
+            document.getElementById('exerciseView').classList.remove('hidden');
+            
+            renderExercise();
+        }
+
+        // Back to menu
+        function backToMenu() {
+            state.currentExercise = null;
+            document.getElementById('exerciseMenu').classList.remove('hidden');
+            document.getElementById('exerciseView').classList.add('hidden');
+        }
+
+        // Render exercise based on type
+        function renderExercise() {
+            const view = document.getElementById('exerciseView');
+            const ex = state.currentExercise;
+            
+            if (ex.type === 'quiz' || ex.type === 'scenario' || ex.type === 'device-quiz') {
+                renderQuizExercise(view, ex);
+            } else if (ex.type === 'matching' || ex.type === 'command-match') {
+                renderMatchingExercise(view, ex);
+            }
+        }
+
+        // Render quiz-type exercise
+        function renderQuizExercise(view, ex) {
+            const questions = ex.questions || ex.scenarios;
+            const currentQ = questions[state.currentQuestion];
+            const totalQ = questions.length;
+            const correctCount = Object.values(state.userAnswers).filter(a => a.correct).length;
+            
+            view.innerHTML = `
+                <div class="back-btn" onclick="backToMenu()">← Back to Exercises</div>
+                <h2>${ex.icon} ${ex.title}</h2>
+                <p style="color: #6B7280; margin-bottom: 1.5rem;">${ex.description}</p>
+                
+                <div class="question-header">
+                    <span style="font-weight: 600; color: #6B7280;">Question ${state.currentQuestion + 1} of ${totalQ}</span>
+                    <span style="font-weight: 600; color: #2563EB;">Score: ${correctCount}/${totalQ}</span>
+                </div>
+                
+                <div class="question-box">
+                    ${ex.type === 'scenario' ? '<div style="font-size: 0.75rem; font-weight: 600; color: #8B5CF6; margin-bottom: 0.5rem;">SCENARIO</div>' : ''}
+                    <div class="question-text">${currentQ.scenario || currentQ.q}</div>
+                </div>
+                
+                <div class="options-grid" id="optionsGrid">
+                    ${currentQ.options.map((opt, idx) => `
+                        <button class="option-btn" onclick="selectAnswer(${idx})" ${state.userAnswers[state.currentQuestion] ? 'disabled' : ''}>
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                
+                ${state.userAnswers[state.currentQuestion] && currentQ.explanation ? `
+                    <div class="explanation-box">
+                        <div class="explanation-title">Explanation:</div>
+                        <div class="explanation-text">${currentQ.explanation}</div>
+                    </div>
+                ` : ''}
+                
+                ${state.userAnswers[state.currentQuestion] ? `
+                    <button class="btn-primary" onclick="nextQuestion()">
+                        ${state.currentQuestion < totalQ - 1 ? 'Next Question' : 'Complete Exercise'}
+                    </button>
+                ` : ''}
+            `;
+            
+            // Update button styles if answer selected
+            if (state.userAnswers[state.currentQuestion]) {
+                const buttons = document.querySelectorAll('.option-btn');
+                buttons.forEach((btn, idx) => {
+                    if (idx === currentQ.correct) {
+                        btn.classList.add('correct');
+                        btn.innerHTML += ' ✓';
+                    } else if (idx === state.userAnswers[state.currentQuestion].selected && idx !== currentQ.correct) {
+                        btn.classList.add('incorrect');
+                        btn.innerHTML += ' ✗';
+                    }
+                });
+            }
+        }
+
+        // Select answer
+        function selectAnswer(idx) {
+            const ex = state.currentExercise;
+            const questions = ex.questions || ex.scenarios;
+            const currentQ = questions[state.currentQuestion];
+            
+            state.userAnswers[state.currentQuestion] = {
+                selected: idx,
+                correct: idx === currentQ.correct
+            };
+            
+            renderExercise();
+        }
+
+        // Next question
+        function nextQuestion() {
+            const ex = state.currentExercise;
+            const questions = ex.questions || ex.scenarios;
+            
+            if (state.currentQuestion < questions.length - 1) {
+                state.currentQuestion++;
+                renderExercise();
+            } else {
+                completeExercise();
+            }
+        }
+
+        // Render matching exercise
+        function renderMatchingExercise(view, ex) {
+            const items = ex.items || ex.commands;
+            const functions = items.map(item => item.function || item.purpose).sort(() => Math.random() - 0.5);
+            
+            view.innerHTML = `
+                <div class="back-btn" onclick="backToMenu()">← Back to Exercises</div>
+                <h2>${ex.icon} ${ex.title}</h2>
+                <p style="color: #6B7280; margin-bottom: 1.5rem;">${ex.description}</p>
+                
+                ${ex.type === 'command-match' ? `
+                    <div class="console-box">
+                        <div>Router> enable</div>
+                        <div>Router# configure terminal</div>
+                        <div>Router(config)#</div>
+                    </div>
+                ` : ''}
+                
+                <div class="match-container">
+                    ${items.map((item, idx) => `
+                        <div class="match-item">
+                            <div class="match-label">
+                                ${ex.type === 'matching' ? `Layer ${item.id}: ${item.layer}` : item.cmd}
+                            </div>
+                            <select class="match-select" onchange="selectMatch('${item.layer || item.cmd}', this.value)" ${state.showResults ? 'disabled' : ''}>
+                                <option value="">Select ${ex.type === 'matching' ? 'function' : 'purpose'}...</option>
+                                ${functions.map(func => `
+                                    <option value="${func}" ${state.userAnswers[item.layer || item.cmd] === func ? 'selected' : ''}>
+                                        ${func}
+                                    </option>
+                                `).join('')}
+                            </select>
+                            ${state.showResults ? `
+                                <div class="result-indicator ${state.userAnswers[item.layer || item.cmd] === (item.function || item.purpose) ? 'correct' : 'incorrect'}">
+                                    ${state.userAnswers[item.layer || item.cmd] === (item.function || item.purpose) 
+                                        ? '✓ Correct!' 
+                                        : `✗ Incorrect - Correct: ${item.function || item.purpose}`}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                
+                ${!state.showResults ? `
+                    <button class="btn-primary" onclick="checkMatching()" ${Object.keys(state.userAnswers).length !== items.length ? 'disabled' : ''}>
+                        Check Answers
+                    </button>
+                ` : ''}
+            `;
+        }
+
+        // Select match
+        function selectMatch(key, value) {
+            state.userAnswers[key] = value;
+            renderExercise();
+        }
+
+        // Check matching answers
+        function checkMatching() {
+            state.showResults = true;
+            renderExercise();
+            setTimeout(() => {
+                const items = state.currentExercise.items || state.currentExercise.commands;
+                let correct = 0;
+                items.forEach(item => {
+                    const key = item.layer || item.cmd;
+                    const answer = item.function || item.purpose;
+                    if (state.userAnswers[key] === answer) correct++;
+                });
+                completeExercise(correct === items.length);
+            }, 2000);
+        }
+
+        // Complete exercise
+        function completeExercise(perfect = null) {
+            state.attempts++;
+            
+            if (perfect === null) {
+                // Calculate for quiz type
+                const correctCount = Object.values(state.userAnswers).filter(a => a.correct).length;
+                const totalCount = Object.keys(state.userAnswers).length;
+                perfect = correctCount === totalCount;
+            }
+            
+            if (perfect) {
+                state.score++;
+            }
+            
+            updateStats();
+            
+            setTimeout(() => {
+                backToMenu();
+            }, 2000);
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('score').textContent = state.score;
+            document.getElementById('attempts').textContent = state.attempts;
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
